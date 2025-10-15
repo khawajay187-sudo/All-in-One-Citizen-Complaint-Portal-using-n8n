@@ -1,0 +1,1168 @@
+{
+  "name": "Complaint Handler Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -112
+      ],
+      "id": "f99a02a6-7018-4509-a687-f4300d0042f4",
+      "name": "WhatsApp Trigger",
+      "webhookId": "8736717c-fa06-4b39-8882-37967d6ca531",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "Jp9KiVTNCVy7gMCI",
+          "name": "Yasir"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 599
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        16,
+        112
+      ],
+      "id": "8fa5f2b9-0562-46e9-bd4a-03b905d2eab4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GZp4ZZUqU4pJDveI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "862191490303907",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        -112
+      ],
+      "id": "57033e42-7812-4ce1-99cb-b35a984306f1",
+      "name": "Send message",
+      "webhookId": "9f9888d1-16b9-4bac-8207-c75a62c9f876",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kqeIf1XKnhoiGyUs",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contacts[0].wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        112
+      ],
+      "id": "7a0fe539-d059-456a-a7ea-3cf76ce876a9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        112
+      ],
+      "id": "7b2c0029-a34c-4540-b823-497098323aa1",
+      "name": "Complaint Status Checker Node",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Applicant Phone Number": "={{ $json.contacts[0].wa_id }}",
+            "Applicant Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Applicant_Name', ``, 'string') }}",
+            "Applicant Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Applicant_Address', ``, 'string') }}",
+            "Complaint Issue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Complaint_Issue', ``, 'string') }}",
+            "Related to Department": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Related_to_Department', ``, 'string') }}",
+            "Status": "pending",
+            "Serial no.": "=1"
+          },
+          "matchingColumns": [
+            "Applicant Phone Number"
+          ],
+          "schema": [
+            {
+              "id": "Serial no.",
+              "displayName": "Serial no.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Applicant Phone Number",
+              "displayName": "Applicant Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant Name",
+              "displayName": "Applicant Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Applicant Address",
+              "displayName": "Applicant Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint Issue",
+              "displayName": "Complaint Issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Related to Department",
+              "displayName": "Related to Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        112
+      ],
+      "id": "9780b128-a00d-4703-a4e7-9a34e6644a37",
+      "name": "Complaint Registration Node",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        112
+      ],
+      "id": "d8741301-9ce7-46f2-9367-4ce2da11c314",
+      "name": "Department Checker Node",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        352
+      ],
+      "id": "e52e8c86-9ead-4205-8793-95b1732fe9b9",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "j1PAMZ13G7vGUHIy",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04ac211c-82d5-4d28-b138-6d56cba81bbd",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        352
+      ],
+      "id": "8a026513-343c-4891-b935-b0c20fcc67d9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        576
+      ],
+      "id": "85b439a9-3761-4ea9-bd34-49d87b1e3031",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GZp4ZZUqU4pJDveI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        560
+      ],
+      "id": "a8c16145-5f33-4d8f-a741-759b91f3c2f6",
+      "name": "Departmental Repo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        560
+      ],
+      "id": "93b1fed4-97ce-432b-b01d-d0e3d5e69bba",
+      "name": "Complaint Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json[\"output\"]; // your AI agent’s text output\n\nconst data = {\n  Complaint_Summary: {\n    Complaint_ID: output.match(/Complaint ID:\\s*(\\d+)/)?.[1] || \"\",\n    Complaint_Phone_Number: output.match(/Complaint Phone Number\\s*:\\s*(\\d+)/)?.[1] || \"\",\n    Complaint_Name: output.match(/Complaint Name:\\s*([^\\n]+)/)?.[1]?.trim() || \"\",\n    Department: output.match(/Department:\\s*([^\\n]+)/)?.[1]?.trim() || \"\",\n    Description: output.match(/Description:\\s*([^\\n]+)/)?.[1]?.trim() || \"\",\n    Location: output.match(/Location:\\s*([^\\n]+)/)?.[1]?.trim() || \"\"\n  },\n  Assigned_Representative: {\n    Name: output.match(/Assigned Representative:[\\s\\S]*?Name:\\s*([^\\n]+)/)?.[1]?.trim() || \"\",\n    Contact: output.match(/Assigned Representative:[\\s\\S]*?Contact:\\s*(\\d+)/)?.[1] || \"\"\n  },\n  Status_Message: output.match(/The complaint has been successfully[\\s\\S]*/)?.[0]?.trim() ||\n    \"The complaint has been successfully mapped to the department representative and is ready for forwarding.\"\n};\n\nreturn data;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        336
+      ],
+      "id": "ff47747f-f891-4f46-b377-ca5c6355c3a1",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 874940779,
+          "mode": "list",
+          "cachedResultName": "Complaint Assigned sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=874940779"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        832
+      ],
+      "id": "a04369ce-31e5-4e6e-a4a4-aed8ca9ebff1",
+      "name": "Google Sheets Trigger1",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "j1PAMZ13G7vGUHIy",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "\"\"",
+        "options": {
+          "systemMessage": "You are the backend routing intelligence of the All-in-One Complaint Portal.\nYour task is to process new or updated complaints from the connected Google Sheet.\nTwo data sources are provided:\n1️⃣ Complaints Sheet — contains Complaint ID, Citizen Phone Number,Citizen Name, Address, Complaint Details, Department, and Status.\n2️⃣ Department Representatives Sheet — contains Department Name, Representative Name, and Contact Number.\n\nWhen triggered:\n\nIdentify the complaint’s department from the Complaints Sheet.\n\nMatch it with the corresponding record in the Department Representatives Sheet.\n\nRetrieve the representative’s name and phone number.\n\nGenerate a structured summary in the following format:\n\nComplaint Summary:\nComplaint ID: <Complaint_ID>\nComplaint Phone Number :<Citizen Phone Number>\nComplaint Name: <Citizen Name>\nDepartment: <Department>\nDescription: <Complaint_Text>\nLocation: <Address>\n\nAssigned Representative:\nName: <Representative_Name>\nContact: <Phone_Number>\n\nEnd your output with a confirmation like:\n“The complaint has been successfully mapped to the department representative and is ready for forwarding.”\n\nAlways use the most recent data from both sheets to ensure accuracy."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        336
+      ],
+      "id": "16a31356-aba3-4ae1-a52f-04669ab3343d",
+      "name": "Agent to Assign Complaint"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "\"\"",
+        "options": {
+          "systemMessage": "You are the backend routing intelligence of the All-in-One Complaint Portal.\nYour task is to process new or updated complaints from the connected Google Sheet.\nTwo data sources are provided:\n1️⃣ Complaints Sheet — contains Complaint ID, Citizen Phone Number,Citizen Name, Address, Complaint Details, Department, and Status.\n2️⃣ Department Representatives Sheet — contains Department Name, Representative Name, and Contact Number.\n\nWhen triggered:\n\nIdentify the complaint’s department from the Complaints Sheet.\n\nMatch it with the corresponding record in the Department Representatives Sheet.\n\nRetrieve the representative’s name and phone number.\n\nGenerate a structured summary in the following format:\n\nComplaint Summary:\nComplaint ID: <Complaint_ID>\nComplaint Phone Number :<Citizen Phone Number>\nComplaint Name: <Citizen Name>\nDepartment: <Department>\nDescription: <Complaint_Text>\nLocation: <Address>\n\nAssigned Representative:\nName: <Representative_Name>\nContact: <Phone_Number>\n\nEnd your output with a confirmation like:\n“The complaint has been successfully mapped to the department representative and is ready for forwarding.”\n\nAlways use the most recent data from both sheets to ensure accuracy."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        832
+      ],
+      "id": "d2c6c5b2-6705-4275-a4ce-d3a20a3d28b0",
+      "name": "Agent to update Customer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1040
+      ],
+      "id": "b7386567-46f5-4df1-a9b8-ee7493664463",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GZp4ZZUqU4pJDveI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        1056
+      ],
+      "id": "67ba36cf-74b7-4aab-95d2-015e93787064",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1027311481,
+          "mode": "list",
+          "cachedResultName": "Compliants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=1027311481"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Applicant Phone Number": "={{ $('Google Sheets Trigger1').item.json['Complaint Phone Number'] }}",
+            "Serial no.": "1",
+            "Applicant Name": "={{ $('Google Sheets Trigger1').item.json['Complaint Name'] }}",
+            "Applicant Address": "={{ $('Google Sheets Trigger1').item.json['Complaint Address'] }}",
+            "Complaint Issue": "={{ $('Google Sheets Trigger1').item.json['Complaint Issue'] }}",
+            "Related to Department": "={{ $('Google Sheets Trigger1').item.json[' department'] }}",
+            "Status": "Assigned"
+          },
+          "matchingColumns": [
+            "Applicant Phone Number"
+          ],
+          "schema": [
+            {
+              "id": "Serial no.",
+              "displayName": "Serial no.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Applicant Phone Number",
+              "displayName": "Applicant Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant Name",
+              "displayName": "Applicant Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Applicant Address",
+              "displayName": "Applicant Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint Issue",
+              "displayName": "Complaint Issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Related to Department",
+              "displayName": "Related to Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        832
+      ],
+      "id": "e4bc4f4c-027e-415d-a2ed-b46eaa0d8486",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "862191490303907",
+        "recipientPhoneNumber": "=String($json[\"{{ $json['Applicant Phone Number'] }}\"])\n",
+        "textBody": "=Dear Worthy Citizen ! {{ $json['Applicant Name'] }} Your Complaint Regarding {{ $json['Complaint Issue'] }} relevant to{{ $json['Related to Department'] }} has been {{ $json.Status }} to Mr. {{ $('Google Sheets Trigger1').item.json['Focal Person/Name of a Person'] }} of department {{ $('Google Sheets Trigger1').item.json[' department'] }}.For further assistance please call him on his number {{ $('Google Sheets Trigger1').item.json['Representative Number'] }} for early disposal of your complaint!\n\nOnce Again Thank You So much for highlihting the issue.We are doing efforts to make Pakistan and our City Great again!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        832
+      ],
+      "id": "fb105025-03dc-4422-92bf-26730d480ff2",
+      "name": "Send Message to Complainant",
+      "webhookId": "04098a2f-da64-4112-9a4d-f3a28569650c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kqeIf1XKnhoiGyUs",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0] }}",
+        "options": {
+          "systemMessage": "=You are the intelligent Complaint Registration Assistant for the \"All in One Complaint Portal\" 🇵🇰.  \n\nYour role is to help Pakistani citizens register civic, municipal, and environmental complaints efficiently and politely.  \nYou are the greeting and menu assistant for the \"All in One Complaint Portal\" 🇵🇰.  \nWhen a user says hello, hi, assalam o alaikum, or sends greetings, reply warmly with a short intro and show this menu:  \n1️⃣ Register a Complaint  \n2️⃣ Check the Status of a Complaint  \n3️⃣ Review Our System  \nAsk them to reply with 1, 2, or 3 to continue.  \nIf the input doesn’t match any option, show the menu again politely.\n\nFollow these steps every time a user sends a complaint:\n\n1. **Image/Text Analysis:**  \n   - If the user sends an image, analyze it to identify what type of issue it represents (e.g., garbage heap, sanitation issue, broken street light, stray dogs, transformer fault, burning wires, air pollution, etc.).  \n   - If the user sends text, analyze the message for the same purpose.  \n\n2. **Department Mapping (Google Sheet Lookup):**  \n   - ALWAYS check the connected Google Sheet to find which department handles the identified issue.  \n   - The sheet contains mappings like:  \n     *Problem Keyword → Responsible Department (e.g., Garbage → RWMC, Street Light → Municipal, Transformer → WAPDA, etc.)*  \n   - Match the detected issue to the correct department.  \n\n3. **Ask for User Details:**  \n   - Once the issue and department are identified, politely ask the user to provide their:  \n     - Full Name  \n     - Complete Address or Location  \n   - Example prompt:  \n     “Thank you for sharing this image. It looks like a *{{issue}}* which falls under *{{department}}*.  \n     To register your complaint, please share your *full name* and *address/location*.”  \n\n4. **Complaint Registration (Google Sheet Update):**  \n   - When the user provides the required details, create a **new complaint entry** in the connected Google Sheet.  \n   - Each new entry should include:  \n     - Name  \n     - Phone Number (from WhatsApp or message metadata)  \n     - Address  \n     - Complaint Description  \n     - Identified Department  \n     - Date and Time  \n     - Status = “Pending”  \n     - Reference ID (auto-generated or timestamp-based)  \n\n5. **Confirmation Message:**  \n   - After successfully adding the complaint, send a polite confirmation message like:  \n     “✅ Your complaint regarding *{{issue}}* has been successfully registered with *{{department}}*.  \n     Complaint Reference ID: *{{ref_id}}*  \n     Thank you, *{{name}}*, for helping us improve our community. 💚”  \n\n6. **Behavior Rules:**  \n   - Always remain polite, civic, and professional.  \n   - The user is a Pakistani citizen seeking help — treat every complaint respectfully.  \n   - Use clear and concise responses.  \n   - If any step is unclear (e.g., missing details or unreadable image), ask politely for clarification before proceeding.\n\nwhen user wants to check the status of his/her complain you can check the google sheet connected with the agent and then update the customer about the status of the complaint after mapping the phone number of a client {{ $json.contacts[0].wa_id }} \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        -112
+      ],
+      "id": "447a5301-ea3d-4258-8499-e24d51618dd6",
+      "name": "Complaint Registration"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "862191490303907",
+        "recipientPhoneNumber": "={{ $json['Representative Number'] }}",
+        "textBody": "=Hi! Mr. {{ $json['Focal Person/Name of a Person'] }} of \nDepartment {{ $json[' department'] }}  a new Complaint has been registered by Mr.{{ $json['Complaint Name'] }}  \nregarding the issue highlighted in the complaint is \n{{ $json['Complaint Issue'] }} in the permises of City \n{{ $json['Complaint Address'] }}.\nThe said complaint has been assigned to you for early disposal!\n\nLets Work Together and make Pakistan Great again!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        336
+      ],
+      "id": "b128ad74-c372-4c7c-98e0-85df5e1f5747",
+      "name": "Send Message to Department Repo",
+      "webhookId": "05afd853-1093-4191-86de-b611a421b931",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kqeIf1XKnhoiGyUs",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc",
+          "mode": "list",
+          "cachedResultName": "Departmental List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 874940779,
+          "mode": "list",
+          "cachedResultName": "Complaint Assigned sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zh7moehDj2ieTfje1zX1miWCba31P3kxcubJW18LUlc/edit#gid=874940779"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Complaint Phone Number": "={{ $json.Complaint_Summary.Complaint_Phone_Number }}",
+            "Complaint Name": "={{ $json.Complaint_Summary.Complaint_Name }}",
+            "Complaint Address": "={{ $json.Complaint_Summary.Location }}",
+            "Complaint Issue": "={{ $json.Complaint_Summary.Description }}",
+            "Focal Person/Name of a Person": "={{ $json.Assigned_Representative.Name }}",
+            " department": "={{ $json.Complaint_Summary.Department }}",
+            "Representative Number": "={{ $json.Assigned_Representative.Contact }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Complaint Phone Number",
+              "displayName": "Complaint Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint Name",
+              "displayName": "Complaint Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint Address",
+              "displayName": "Complaint Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint Issue",
+              "displayName": "Complaint Issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Focal Person/Name of a Person",
+              "displayName": "Focal Person/Name of a Person",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " department",
+              "displayName": " department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Representative Number",
+              "displayName": "Representative Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        464
+      ],
+      "id": "bb3ceb41-a709-4e21-802d-0158abce0f2a",
+      "name": "Complaint Assigned Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0XrNTIkdNiXDvtK6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Module No 1:- Complaint Registration\n",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "645ca604-4461-4b53-829e-cb717d27d4cc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Module No 2:- Complaint Assignment to Relevant Department\n",
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -288,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "e21c2216-26ad-412a-834d-8a3e2bb17e00",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Module No 3:- Update Complainant about complaint assignment\n",
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        1008
+      ],
+      "typeVersion": 1,
+      "id": "b3f50b06-fca8-40f7-b9b2-c40c0e0dd2fe",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        848
+      ],
+      "id": "4dde4d64-c75a-4bd0-b1d3-2bfbdfe9e4cb",
+      "name": "Wait",
+      "webhookId": "b016513d-692d-4146-b9a7-c56b137f2e81"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Status Checker Node": {
+      "ai_tool": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Registration Node": {
+      "ai_tool": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Department Checker Node": {
+      "ai_tool": [
+        [
+          {
+            "node": "Complaint Registration",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Agent to Assign Complaint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent to Assign Complaint",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Departmental Repo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent to Assign Complaint",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent to Assign Complaint",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Complaint Assigned Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Agent to update Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent to Assign Complaint": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent to update Customer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent to update Customer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent to update Customer": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Registration": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Assigned Data": {
+      "main": [
+        [
+          {
+            "node": "Send Message to Department Repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send Message to Complainant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "de901f61-6974-4d17-a3a5-7f0d3ac5eb04",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "06185c8c98358ba7a89bd81ffd3c06bee2874262a1fdb9c794a115bcdf20c316"
+  },
+  "id": "5MLoP5AspJOm1X4I",
+  "tags": []
+}
